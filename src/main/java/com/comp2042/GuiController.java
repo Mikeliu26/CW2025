@@ -10,6 +10,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -38,6 +40,12 @@ public class GuiController implements Initializable {
 
     @FXML
     private GameOverPanel gameOverPanel;
+
+    @FXML
+    private Label scoreLabel;
+
+    @FXML
+    private Button pauseButton;
 
     private Rectangle[][] displayMatrix;
 
@@ -77,8 +85,17 @@ public class GuiController implements Initializable {
                         keyEvent.consume();
                     }
                 }
+
+                // Pause key - works even when paused
+                if (keyEvent.getCode() == KeyCode.P) {
+                    pauseGame(null);
+                    keyEvent.consume();
+                }
+
+                // New game key
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
+                    keyEvent.consume();
                 }
             }
         });
@@ -201,6 +218,7 @@ public class GuiController implements Initializable {
     }
 
     public void bindScore(IntegerProperty integerProperty) {
+        scoreLabel.textProperty().bind(integerProperty.asString("Score: %d"));
     }
 
     public void gameOver() {
@@ -217,9 +235,19 @@ public class GuiController implements Initializable {
         timeLine.play();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+        pauseButton.setText("Pause");
     }
 
     public void pauseGame(ActionEvent actionEvent) {
+        if (isPause.getValue() == Boolean.FALSE) {
+            timeLine.pause();
+            isPause.setValue(Boolean.TRUE);
+            pauseButton.setText("Resume");
+        } else {
+            timeLine.play();
+            isPause.setValue(Boolean.FALSE);
+            pauseButton.setText("Pause");
+        }
         gamePanel.requestFocus();
     }
 }
