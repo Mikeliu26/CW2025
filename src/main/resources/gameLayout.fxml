@@ -5,7 +5,8 @@
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <Pane fx:controller="com.comp2042.GuiController"
-      xmlns:fx="http://javafx.com/fxml">
+      xmlns:fx="http://javafx.com/fxml"
+      prefWidth="350" prefHeight="550">
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
         <center>
@@ -13,20 +14,19 @@
         </center>
     </BorderPane>
 
-    <Label fx:id="scoreLabel" text="Score: 0"
-           layoutX="220" layoutY="50"
-           styleClass="scoreClass"/>
+    <VBox layoutX="240" layoutY="50" spacing="10">
+        <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
 
-    <Button fx:id="pauseButton" text="Pause"
-            layoutX="220" layoutY="10"
-            onAction="#pauseGame"
-            styleClass="ipad-dark-grey"
-            prefWidth="80" prefHeight="30"/>
+        <Button fx:id="pauseButton" text="Pause"
+                onAction="#pauseGame"
+                styleClass="ipad-dark-grey"
+                prefWidth="100" prefHeight="35"/>
 
-    <Button text="New Game" layoutX="220" layoutY="90"
-            onAction="#newGame"
-            styleClass="ipad-dark-grey"
-            prefWidth="80" prefHeight="30"/>
+        <Button text="New Game"
+                onAction="#newGame"
+                styleClass="ipad-dark-grey"
+                prefWidth="100" prefHeight="35"/>
+    </VBox>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">
