@@ -1,4 +1,4 @@
-package com.comp2042;
+package Data;
 
 public final class DownData {
     private final ClearRow clearRow;

@@ -1,9 +1,12 @@
-package com.comp2042;
+package Model;
 
+import Data.ClearRow;
+import Data.NextShapeInfo;
+import Data.ViewData;
+import Utilities.MatrixOperations;
 import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
-
 import java.awt.*;
 
 public class SimpleBoard implements Board {
