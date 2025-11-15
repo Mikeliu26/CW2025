@@ -7,10 +7,11 @@ import Data.ViewData;
 import Model.Board;
 import Model.SimpleBoard;
 import com.comp2042.*;
+import Utilities.GameConstants;
 
 public class GameController implements InputEventListener {
 
-    private Board board = new SimpleBoard(25, 10);
+    private Board board = new SimpleBoard(GameConstants.BOARD_HEIGHT, GameConstants.BOARD_WIDTH);
 
     private final GuiController viewGuiController;
 
