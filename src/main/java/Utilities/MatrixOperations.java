@@ -8,13 +8,32 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class for matrix operations in the Tetris game.
+ * Provides static methods for collision detection, matrix manipulation,
+ * and line clearing logic. This class cannot be instantiated.
+ */
+
 public class MatrixOperations {
 
 
-    //We don't want to instantiate this utility class
+    /**
+     * Private constructor
+     * Only with static method
+     */
     private MatrixOperations(){
 
     }
+    /**
+     * Checks if a brick intersects with the game board or goes out of bounds.
+     * Used for collision detection during brick movement and rotation.
+     *
+     * @param matrix the game board matrix
+     * @param brick the brick shape matrix
+     * @param x the horizontal position to check
+     * @param y the vertical position to check
+     * @return true if there is an intersection or out of bounds, false otherwise
+     */
 
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
         for (int i = 0; i < brick.length; i++) {
@@ -62,6 +81,16 @@ public class MatrixOperations {
         return copy;
     }
 
+    /**
+     * Checks for and removes completed rows from the game board.
+     * Calculates score bonus based on number of lines cleared.
+     * Score formula: 50 * linesCleared^2
+     *
+     * @param matrix the game board to check
+     * @return ClearRow object containing cleared line count, updated matrix, and score bonus
+     */
+
+
     public static ClearRow checkRemoving(final int[][] matrix) {
         int[][] tmp = new int[matrix.length][matrix[0].length];
         Deque<int[]> newRows = new ArrayDeque<>();
@@ -93,6 +122,14 @@ public class MatrixOperations {
         int scoreBonus = 50 * clearedRows.size() * clearedRows.size();
         return new ClearRow(clearedRows.size(), tmp, scoreBonus);
     }
+
+    /**
+     * Creates a deep copy of a list of 2D matrices.
+     * Used for copying brick rotation states.
+     *
+     * @param list the list of matrices to copy
+     * @return a new list containing deep copies of all matrices
+     */
 
     public static List<int[][]> deepCopyList(List<int[][]> list){
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());

@@ -32,7 +32,16 @@ import Utilities.GameConstants;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * JavaFX controller managing user interface for Tetris
+ * Handles rendering, user input, animations, and visual updates.
+ * Implimented for FXML
+ */
+
 public class GuiController implements Initializable {
+    /**
+     * Size of each brick in pixels
+     */
 
     private static final int BRICK_SIZE = GameConstants.BRICK_SIZE;
 
@@ -54,17 +63,26 @@ public class GuiController implements Initializable {
     @FXML
     private Button pauseButton;
 
+    /** Matrix of each rectangle representing game board display */
     private Rectangle[][] displayMatrix;
-
+    /** Listener for input events*/
     private InputEventListener eventListener;
-
+    /** Rectangle representing current failing block */
     private Rectangle[][] rectangles;
-
+    /** Timeline to control automatic brick failing */
     private Timeline timeLine;
-
+    /** Tracking pause state */
     private final BooleanProperty isPause = new SimpleBooleanProperty();
-
+    /** Tracking game over state */
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+
+    /**
+     * Initializes the controller and sets up UI components.
+     * Loads custom font, configures keyboard handlers, and prepares game view.
+     * Called automatically by JavaFX when FXML is loaded.
+     * @param location URL location of fxml
+     * @param resources Resource bundle
+     */
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -120,6 +138,13 @@ public class GuiController implements Initializable {
         reflection.setTopOffset(-12);
     }
 
+    /**
+     * Initializes the game view with board and brick displays.
+     * Sets up the display matrix, brick preview, and game loop.
+     * @param boardMatrix the game board state matrix
+     * @param brick the initial brick view data
+     */
+
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
         for (int i = 2; i < boardMatrix.length; i++) {
@@ -166,6 +191,12 @@ public class GuiController implements Initializable {
         }
     }
 
+    /**
+     * Updates the visual position and appearance of the current brick.
+     * Only updates when game is not paused.
+     * @param board current matrix board
+     */
+
     public void refreshGameBackground(int[][] board) {
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -174,11 +205,23 @@ public class GuiController implements Initializable {
         }
     }
 
+    /**
+     * Sets the visual properties of a rectangle based on color code.
+     * @param color the color code for the rectangle
+     * @param rectangle the rectangle to update
+     */
+
     private void setRectangleData(int color, Rectangle rectangle) {
         rectangle.setFill(ColourManager.getFillColor(color));
         rectangle.setArcHeight(9);
         rectangle.setArcWidth(9);
     }
+
+    /**
+     * Handles downward movement of the brick.
+     * Processes movement, line clearing, and notifications.
+     * @param event the move event containing source information
+     */
 
     private void moveDown(MoveEvent event) {
         if (!isPause.getValue()) {
@@ -193,19 +236,41 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Sets the input event listener for game interactions.
+     * @param eventListener the listener to handle input events
+     */
+
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }
 
+    /**
+     * Binds the score label to the game score property.
+     * Automatically updates UI when score changes.
+     * @param integerProperty the score property to bind
+     */
+
     public void bindScore(IntegerProperty integerProperty) {
         scoreLabel.textProperty().bind(integerProperty.asString("Score: %d"));
     }
+
+    /**
+     * Displays the game over screen and stops the game loop.
+     * Called when the game board is full.
+     */
 
     public void gameOver() {
         timeLine.stop();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
     }
+
+    /**
+     * Start new game by resetting all the blocks.
+     * Hide game over panel and restarting the loop.
+     * @param actionEvent the button click event (can be null)
+     */
 
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
@@ -217,6 +282,12 @@ public class GuiController implements Initializable {
         isGameOver.setValue(Boolean.FALSE);
         pauseButton.setText("Pause");
     }
+
+    /**
+     * Pauses game.
+     * DUring pausing the button displays resume.
+     * @param actionEvent the button click event (can be null)
+     */
 
     public void pauseGame(ActionEvent actionEvent) {
         if (!isPause.getValue()) {
