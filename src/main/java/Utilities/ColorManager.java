@@ -9,7 +9,7 @@ import javafx.scene.paint.Paint;
  * Elliminate code duplication
  */
 
-public class ColourManager {
+public class ColorManager {
 
     private static final Color[] BRICK_COLORS = {
             Color.TRANSPARENT,    // 0

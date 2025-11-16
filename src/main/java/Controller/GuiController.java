@@ -1,7 +1,7 @@
 package Controller;
 
 
-import Utilities.ColourManager;
+import Utilities.ColorManager;
 import Data.DownData;
 import Data.MoveEvent;
 import Data.ViewData;
@@ -31,6 +31,8 @@ import javafx.util.Duration;
 import Utilities.GameConstants;
 import java.net.URL;
 import java.util.ResourceBundle;
+import Utilities.GhostPieceCalculator;
+import java.awt.Point;
 
 /**
  * JavaFX controller managing user interface for Tetris
@@ -55,6 +57,9 @@ public class GuiController implements Initializable {
     private GridPane brickPanel;
 
     @FXML
+    private GridPane ghostPanel;
+
+    @FXML
     private GameOverPanel gameOverPanel;
 
     @FXML
@@ -63,24 +68,41 @@ public class GuiController implements Initializable {
     @FXML
     private Button pauseButton;
 
-    /** Matrix of each rectangle representing game board display */
+    /**
+     * Matrix of each rectangle representing game board display
+     */
     private Rectangle[][] displayMatrix;
-    /** Listener for input events*/
+    /**
+     * Listener for input events
+     */
     private InputEventListener eventListener;
-    /** Rectangle representing current failing block */
+    /**
+     * Rectangle representing current failing block
+     */
     private Rectangle[][] rectangles;
-    /** Timeline to control automatic brick failing */
+    /**
+     * To add ghost rectangle fields
+     */
+    private Rectangle[][] ghostRectangles;
+    /**
+     * Timeline to control automatic brick failing
+     */
     private Timeline timeLine;
-    /** Tracking pause state */
+    /**
+     * Tracking pause state
+     */
     private final BooleanProperty isPause = new SimpleBooleanProperty();
-    /** Tracking game over state */
+    /**
+     * Tracking game over state
+     */
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
     /**
      * Initializes the controller and sets up UI components.
      * Loads custom font, configures keyboard handlers, and prepares game view.
      * Called automatically by JavaFX when FXML is loaded.
-     * @param location URL location of fxml
+     *
+     * @param location  URL location of fxml
      * @param resources Resource bundle
      */
 
@@ -141,8 +163,9 @@ public class GuiController implements Initializable {
     /**
      * Initializes the game view with board and brick displays.
      * Sets up the display matrix, brick preview, and game loop.
+     *
      * @param boardMatrix the game board state matrix
-     * @param brick the initial brick view data
+     * @param brick       the initial brick view data
      */
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -160,7 +183,7 @@ public class GuiController implements Initializable {
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-                rectangle.setFill(ColourManager.getFillColor(brick.getBrickData()[i][j]));
+                rectangle.setFill(ColorManager.getFillColor(brick.getBrickData()[i][j]));
                 rectangles[i][j] = rectangle;
                 brickPanel.add(rectangle, j, i);
             }
@@ -168,6 +191,18 @@ public class GuiController implements Initializable {
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
         brickPanel.setLayoutY(GameConstants.VERTICAL_OFFSET + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
 
+        ghostRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
+        for (int i = 0; i < brick.getBrickData().length; i++) {
+            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                rectangle.setFill(Color.TRANSPARENT);
+                rectangle.setOpacity(0.3);  // Semi-transparent ghost
+                ghostRectangles[i][j] = rectangle;
+                ghostPanel.add(rectangle, j, i);
+            }
+        }
+
+        updateGhostPosition(brick, boardMatrix);
 
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(GameConstants.FALL_SPEED_MS),
@@ -176,7 +211,6 @@ public class GuiController implements Initializable {
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
     }
-
 
 
     private void refreshBrick(ViewData brick) {
@@ -188,12 +222,15 @@ public class GuiController implements Initializable {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
                 }
             }
+            /** Update ghost block when moving */
+            updateGhostPosition(brick, getCurrentBoard());
         }
     }
 
     /**
      * Updates the visual position and appearance of the current brick.
      * Only updates when game is not paused.
+     *
      * @param board current matrix board
      */
 
@@ -207,12 +244,13 @@ public class GuiController implements Initializable {
 
     /**
      * Sets the visual properties of a rectangle based on color code.
-     * @param color the color code for the rectangle
+     *
+     * @param color     the color code for the rectangle
      * @param rectangle the rectangle to update
      */
 
     private void setRectangleData(int color, Rectangle rectangle) {
-        rectangle.setFill(ColourManager.getFillColor(color));
+        rectangle.setFill(ColorManager.getFillColor(color));
         rectangle.setArcHeight(9);
         rectangle.setArcWidth(9);
     }
@@ -220,6 +258,7 @@ public class GuiController implements Initializable {
     /**
      * Handles downward movement of the brick.
      * Processes movement, line clearing, and notifications.
+     *
      * @param event the move event containing source information
      */
 
@@ -238,6 +277,7 @@ public class GuiController implements Initializable {
 
     /**
      * Sets the input event listener for game interactions.
+     *
      * @param eventListener the listener to handle input events
      */
 
@@ -248,6 +288,7 @@ public class GuiController implements Initializable {
     /**
      * Binds the score label to the game score property.
      * Automatically updates UI when score changes.
+     *
      * @param integerProperty the score property to bind
      */
 
@@ -269,6 +310,7 @@ public class GuiController implements Initializable {
     /**
      * Start new game by resetting all the blocks.
      * Hide game over panel and restarting the loop.
+     *
      * @param actionEvent the button click event (can be null)
      */
 
@@ -286,6 +328,7 @@ public class GuiController implements Initializable {
     /**
      * Pauses game.
      * DUring pausing the button displays resume.
+     *
      * @param actionEvent the button click event (can be null)
      */
 
@@ -300,5 +343,55 @@ public class GuiController implements Initializable {
             pauseButton.setText("Pause");
         }
         gamePanel.requestFocus();
+    }
+
+    /**
+     * Updates the ghost piece position and appearance.
+     * Shows semi-transparent preview of where the brick will land.
+     *
+     * @param brick       current brick view data
+     * @param boardMatrix current game board state
+     */
+    private void updateGhostPosition(ViewData brick, int[][] boardMatrix) {
+        if (!isPause.getValue()) {
+            // Calculate where brick will land
+            Point ghostPos = GhostPieceCalculator.calculateGhostPosition(
+                    boardMatrix,
+                    brick.getBrickData(),
+                    brick.getxPosition(),
+                    brick.getyPosition()
+            );
+
+            // Position the ghost panel
+            ghostPanel.setLayoutX(gamePanel.getLayoutX() + ghostPos.x * ghostPanel.getVgap() + ghostPos.x * BRICK_SIZE);
+            ghostPanel.setLayoutY(GameConstants.VERTICAL_OFFSET + gamePanel.getLayoutY() + ghostPos.y * ghostPanel.getHgap() + ghostPos.y * BRICK_SIZE);
+
+            // Update ghost rectangles to match current brick shape
+            for (int i = 0; i < brick.getBrickData().length; i++) {
+                for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+                    if (brick.getBrickData()[i][j] != 0) {
+                        ghostRectangles[i][j].setFill(ColorManager.getFillColor(brick.getBrickData()[i][j]));
+                        ghostRectangles[i][j].setOpacity(0.3);  // 30% transparent
+                        ghostRectangles[i][j].setArcHeight(9);
+                        ghostRectangles[i][j].setArcWidth(9);
+                    } else {
+                        ghostRectangles[i][j].setFill(Color.TRANSPARENT);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets the current game board matrix.
+     * Used for ghost piece calculation.
+     *
+     * @return the current board state
+     */
+    private int[][] getCurrentBoard() {
+        if (eventListener != null && eventListener instanceof GameController) {
+            return ((GameController) eventListener).getBoard().getBoardMatrix();
+        }
+        return new int[0][0];
     }
 }

@@ -105,4 +105,13 @@ public class GameController implements InputEventListener {
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
     }
+
+    /**
+     * Gets the game board for ghost piece calculations.
+     *
+     * @return the current Board object
+     */
+    public Board getBoard() {
+        return board;
+    }
 }

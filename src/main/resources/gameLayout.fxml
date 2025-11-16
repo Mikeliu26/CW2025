@@ -7,7 +7,12 @@
 <Pane fx:controller="Controller.GuiController"
       xmlns:fx="http://javafx.com/fxml"
       prefWidth="350" prefHeight="550">
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+    <GridPane fx:id="brickPanel" hgap="1" vgap="1">
+    </GridPane>
+
+    <GridPane fx:id="ghostPanel" hgap="1" vgap="1" visible="true">
+    </GridPane>
+
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
         <center>
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
