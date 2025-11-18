@@ -60,6 +60,9 @@ public class GuiController implements Initializable {
     private GridPane ghostPanel;
 
     @FXML
+    private GridPane holdPanel;
+
+    @FXML
     private GameOverPanel gameOverPanel;
 
     @FXML
@@ -67,6 +70,7 @@ public class GuiController implements Initializable {
 
     @FXML
     private Button pauseButton;
+
 
     /**
      * Matrix of each rectangle representing game board display
@@ -84,6 +88,10 @@ public class GuiController implements Initializable {
      * To add ghost rectangle fields
      */
     private Rectangle[][] ghostRectangles;
+    /**
+     * To hold the ghost rectangle
+     */
+    private Rectangle[][] holdRectangles;
     /**
      * Timeline to control automatic brick failing
      */
@@ -137,6 +145,10 @@ public class GuiController implements Initializable {
                         moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
                         keyEvent.consume();
                     }
+                    if (keyEvent.getCode() == KeyCode.H || keyEvent.getCode() == KeyCode.SPACE) {
+                        holdPiece();
+                        keyEvent.consume();
+                    }
                 }
 
                 // Pause key - works even when paused
@@ -153,8 +165,11 @@ public class GuiController implements Initializable {
             }
         });
         gameOverPanel.setVisible(false);
+        initHoldPanel();
 
         final Reflection reflection = new Reflection();
+
+
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
@@ -213,7 +228,7 @@ public class GuiController implements Initializable {
     }
 
 
-    private void refreshBrick(ViewData brick) {
+    public void refreshBrick(ViewData brick) {
         if (!isPause.getValue()) {
             brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
             brickPanel.setLayoutY(GameConstants.VERTICAL_OFFSET + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
@@ -393,5 +408,58 @@ public class GuiController implements Initializable {
             return ((GameController) eventListener).getBoard().getBoardMatrix();
         }
         return new int[0][0];
+    }
+
+    /**
+     * Initializes the hold piece display panel.
+     * Creates a 4x4 grid for displaying the held brick.
+     */
+    public void initHoldPanel() {
+        holdRectangles = new Rectangle[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE, GameConstants.BRICK_SIZE);
+                rectangle.setFill(Color.TRANSPARENT);
+                rectangle.setArcHeight(9);
+                rectangle.setArcWidth(9);
+                holdRectangles[i][j] = rectangle;
+                holdPanel.add(rectangle, j, i);
+            }
+        }
+    }
+
+    /**
+     * Updates the hold panel display with the held brick.
+     *
+     * @param brickData the brick shape to display (null to clear)
+     */
+    public void updateHoldDisplay(int[][] brickData) {
+        // Clear all rectangles first
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                holdRectangles[i][j].setFill(Color.TRANSPARENT);
+            }
+        }
+
+        // If there's a brick to display
+        if (brickData != null) {
+            for (int i = 0; i < brickData.length; i++) {
+                for (int j = 0; j < brickData[i].length; j++) {
+                    if (brickData[i][j] != 0) {
+                        holdRectangles[i][j].setFill(ColorManager.getFillColor(brickData[i][j]));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Handles the hold piece action.
+     * Requests the controller to swap current piece with held piece.
+     */
+    private void holdPiece() {
+        if (eventListener instanceof GameController) {
+            ((GameController) eventListener).holdCurrentPiece();
+        }
     }
 }

@@ -7,6 +7,7 @@
 <Pane fx:controller="Controller.GuiController"
       xmlns:fx="http://javafx.com/fxml"
       prefWidth="350" prefHeight="550">
+
     <GridPane fx:id="brickPanel" hgap="1" vgap="1">
     </GridPane>
 
@@ -19,7 +20,9 @@
         </center>
     </BorderPane>
 
+    <!-- Right Side Panel with Score, Buttons, and Hold Box -->
     <VBox layoutX="240" layoutY="50" spacing="10">
+
         <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
 
         <Button fx:id="pauseButton" text="Pause"
@@ -31,6 +34,19 @@
                 onAction="#newGame"
                 styleClass="ipad-dark-grey"
                 prefWidth="100" prefHeight="35"/>
+
+        <!-- Hold Piece Display -->
+        <VBox alignment="CENTER" spacing="5" style="-fx-padding: 10px;">
+            <Label text="HOLD" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <BorderPane prefWidth="90" prefHeight="90"
+                        style="-fx-border-color: #4CAF50; -fx-border-width: 3px; -fx-background-color: rgba(0,0,0,0.5); -fx-border-radius: 8px; -fx-background-radius: 8px;">
+                <center>
+                    <GridPane fx:id="holdPanel" hgap="1" vgap="1" alignment="CENTER"/>
+                </center>
+            </BorderPane>
+            <Label text="Press H or SPACE" style="-fx-font-size: 11px; -fx-text-fill: #AAA;"/>
+        </VBox>
+
     </VBox>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
@@ -38,6 +54,7 @@
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
+
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>

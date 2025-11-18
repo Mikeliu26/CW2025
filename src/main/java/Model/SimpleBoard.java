@@ -20,6 +20,7 @@ public class SimpleBoard implements Board {
     private int[][] currentGameMatrix;
     private Point currentOffset;
     private final Score score;
+    private Brick currentBrick;
 
     public SimpleBoard(int height, int width) {
         this.width = width;
@@ -88,7 +89,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
-        Brick currentBrick = brickGenerator.getBrick();
+        currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(GameConstants.INITIAL_BRICK_X, GameConstants.INITIAL_BRICK_Y);
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
@@ -128,5 +129,17 @@ public class SimpleBoard implements Board {
         currentGameMatrix = new int[height][width];
         score.reset();
         createNewBrick();
+    }
+
+    @Override
+    public Brick getCurrentBrick() {
+        return currentBrick;
+    }
+
+    @Override
+    public void setCurrentBrick(Brick brick) {
+        this.currentBrick = brick;
+        brickRotator.setBrick(brick);
+        currentOffset = new Point(GameConstants.INITIAL_BRICK_X, GameConstants.INITIAL_BRICK_Y);
     }
 }

@@ -2,6 +2,8 @@ package Model;
 
 import Data.ClearRow;
 import Data.ViewData;
+import com.comp2042.logic.bricks.Brick;
+
 
 public interface Board {
 
@@ -26,4 +28,18 @@ public interface Board {
     Score getScore();
 
     void newGame();
+
+    /**
+     * Gets the current falling brick.
+     *
+     * @return the current Brick
+     */
+    Brick getCurrentBrick();
+
+    /**
+     * Sets a new current brick (for hold piece feature).
+     *
+     * @param brick the brick to set as current
+     */
+    void setCurrentBrick(Brick brick);
 }

@@ -8,6 +8,9 @@ import Model.Board;
 import Model.SimpleBoard;
 import com.comp2042.*;
 import Utilities.GameConstants;
+import Model.HoldManager;
+import com.comp2042.logic.bricks.Brick;
+
 
 /**
  * Main game controller
@@ -20,6 +23,9 @@ public class GameController implements InputEventListener {
     private Board board = new SimpleBoard(GameConstants.BOARD_HEIGHT, GameConstants.BOARD_WIDTH);
 
     private final GuiController viewGuiController;
+
+    private final HoldManager holdManager = new HoldManager();
+
     /**
      * Constructs a new GameController and initializes the game.
      * Sets up the board, GUI bindings, and initial game state.
@@ -46,6 +52,7 @@ public class GameController implements InputEventListener {
         ClearRow clearRow = null;
         if (!canMove) {
             board.mergeBrickToBackground();
+            holdManager.resetHoldLock();
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
@@ -103,6 +110,8 @@ public class GameController implements InputEventListener {
     @Override
     public void createNewGame() {
         board.newGame();
+        holdManager.clear();
+        viewGuiController.updateHoldDisplay(null);
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
     }
 
@@ -113,5 +122,36 @@ public class GameController implements InputEventListener {
      */
     public Board getBoard() {
         return board;
+    }
+
+    /**
+     * Handles holding the current piece.
+     * Swaps current piece with held piece, or stores it if first hold.
+     */
+    public void holdCurrentPiece() {
+        if (!holdManager.canHold()) {
+            return;  // Already held this piece
+        }
+
+        Brick currentBrick = board.getCurrentBrick();
+        Brick swappedBrick = holdManager.holdBrick(currentBrick);
+
+        if (swappedBrick == null) {
+            // First hold - get next brick
+            board.createNewBrick();
+        } else {
+            // Swap with held brick
+            board.setCurrentBrick(swappedBrick);
+        }
+
+        // Update hold display
+        Brick heldBrick = holdManager.getHeldBrick();
+        if (heldBrick != null) {
+            viewGuiController.updateHoldDisplay(heldBrick.getShape());
+        }
+
+        // Refresh view
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        viewGuiController.refreshBrick(board.getViewData());
     }
 }
