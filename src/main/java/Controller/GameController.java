@@ -154,4 +154,38 @@ public class GameController implements InputEventListener {
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
         viewGuiController.refreshBrick(board.getViewData());
     }
+    /**
+     * Performs a hard drop of the current piece.
+     * Instantly drops the piece to the ghost position and locks it.
+     */
+    public void hardDropPiece() {
+        int dropDistance = 0;
+
+        // Count how far we drop
+        while (board.moveBrickDown()) {
+            dropDistance++;
+        }
+
+        // Award 2 points per row dropped
+        if (dropDistance > 0) {
+            board.getScore().add(dropDistance * 2);
+        }
+
+        // Piece has landed - process as normal down event
+        board.mergeBrickToBackground();
+        holdManager.resetHoldLock();  // Allow holding next piece
+
+        ClearRow clearRow = board.clearRows();
+        if (clearRow.getLinesRemoved() > 0) {
+            board.getScore().add(clearRow.getScoreBonus());
+            viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        }
+
+        if (board.createNewBrick()) {
+            viewGuiController.gameOver();
+        }
+
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        viewGuiController.refreshBrick(board.getViewData());
+    }
 }

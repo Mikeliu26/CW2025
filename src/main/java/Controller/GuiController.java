@@ -145,8 +145,12 @@ public class GuiController implements Initializable {
                         moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
                         keyEvent.consume();
                     }
-                    if (keyEvent.getCode() == KeyCode.H || keyEvent.getCode() == KeyCode.SPACE) {
+                    if (keyEvent.getCode() == KeyCode.H) {
                         holdPiece();
+                        keyEvent.consume();
+                    }
+                    if (keyEvent.getCode() == KeyCode.SPACE) {
+                        hardDrop();
                         keyEvent.consume();
                     }
                 }
@@ -460,6 +464,19 @@ public class GuiController implements Initializable {
     private void holdPiece() {
         if (eventListener instanceof GameController) {
             ((GameController) eventListener).holdCurrentPiece();
+        }
+    }
+
+    /**
+     * Performs a hard drop of the current piece.
+     * Instantly drops the piece to the bottom (ghost position),
+     * Via space bar.
+     */
+    private void hardDrop() {
+        if (!isPause.getValue() && !isGameOver.getValue()) {
+            if (eventListener instanceof GameController) {
+                ((GameController) eventListener).hardDropPiece();
+            }
         }
     }
 }

@@ -44,7 +44,8 @@
                     <GridPane fx:id="holdPanel" hgap="1" vgap="1" alignment="CENTER"/>
                 </center>
             </BorderPane>
-            <Label text="Press H or SPACE" style="-fx-font-size: 11px; -fx-text-fill: #AAA;"/>
+            <Label text="Press H to Hold" style="-fx-font-size: 11px; -fx-text-fill: #AAA;"/>
+            <Label text="SPACE to Drop" style="-fx-font-size: 11px; -fx-text-fill: #AAA;"/>
         </VBox>
 
     </VBox>
