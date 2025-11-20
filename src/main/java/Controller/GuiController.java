@@ -90,6 +90,9 @@ public class GuiController implements Initializable {
     @FXML
     private GridPane nextPanel5;
 
+    @FXML
+    private Label highScoreLabel;
+
 
 
     /**
@@ -564,5 +567,23 @@ public class GuiController implements Initializable {
                 ((GameController) eventListener).hardDropPiece();
             }
         }
+    }
+
+    /**
+     * Always update the new high score.
+     *
+     * @param highScore the high score value
+     */
+    public void updateHighScoreDisplay(int highScore) {
+        highScoreLabel.setText(String.valueOf(highScore));
+    }
+
+    /**
+     * Shows a "NEW HIGH SCORE!" notification.
+     */
+    public void showNewHighScoreNotification() {
+        NotificationPanel notification = new NotificationPanel("NEW HIGH SCORE!");
+        groupNotification.getChildren().add(notification);
+        notification.showScore(groupNotification.getChildren());
     }
 }

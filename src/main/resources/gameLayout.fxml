@@ -20,8 +20,8 @@
         </center>
     </BorderPane>
 
-    <!-- Right Side Panel with Score, Buttons, and Hold Box -->
     <VBox layoutX="240" layoutY="50" spacing="10">
+    <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
 
         <!-- Next Pieces Preview - UNIFIED CONTAINER -->
         <VBox alignment="CENTER" spacing="0" style="-fx-padding: 8px; -fx-border-color: #2196F3; -fx-border-width: 3px; -fx-background-color: rgba(0,0,0,0.5); -fx-border-radius: 10px; -fx-background-radius: 10px;">
@@ -46,7 +46,17 @@
             <GridPane fx:id="nextPanel5" hgap="1" vgap="1" alignment="CENTER" style="-fx-padding: 4px;"/>
         </VBox>
 
-        <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
+
+        <VBox alignment="CENTER" spacing="0" style="-fx-padding: 8px; -fx-border-color: #2196F3; -fx-border-width: 3px; -fx-background-color: rgba(0,0,0,0.5); -fx-border-radius: 10px; -fx-background-radius: 10px;">
+
+        </VBox>
+
+        <!-- High Score Display - ADD THIS -->
+        <VBox alignment="CENTER" spacing="2" style="-fx-padding: 5px;">
+            <Label text="HIGH SCORE" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #FFD700;"/>
+            <Label fx:id="highScoreLabel" text="0" style="-fx-font-size: 20px; -fx-text-fill: #FFD700; -fx-font-family: 'Let''s go Digital';"/>
+        </VBox>
+
 
         <Button fx:id="pauseButton" text="Pause"
                 onAction="#pauseGame"

@@ -12,6 +12,7 @@ import Model.HoldManager;
 import com.comp2042.logic.bricks.Brick;
 import java.util.List;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
+import Model.HighScoreManager;
 
 
 /**
@@ -40,6 +41,8 @@ public class GameController implements InputEventListener {
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
         updateNextPiecesDisplay();
+        int highScore = HighScoreManager.getInstance().getHighScore();
+        viewGuiController.updateHighScoreDisplay(highScore);
     }
 
     /**
@@ -59,6 +62,7 @@ public class GameController implements InputEventListener {
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
+                checkHighScore();
             }
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
@@ -144,6 +148,7 @@ public class GameController implements InputEventListener {
         if (swappedBrick == null) {
             // First hold - get next brick
             board.createNewBrick();
+            updateNextPiecesDisplay();
         } else {
             // Swap with held brick
             board.setCurrentBrick(swappedBrick);
@@ -183,12 +188,15 @@ public class GameController implements InputEventListener {
         ClearRow clearRow = board.clearRows();
         if (clearRow.getLinesRemoved() > 0) {
             board.getScore().add(clearRow.getScoreBonus());
+            checkHighScore();
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
         }
 
         if (board.createNewBrick()) {
             viewGuiController.gameOver();
         }
+
+        updateNextPiecesDisplay();
 
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
         viewGuiController.refreshBrick(board.getViewData());
@@ -202,6 +210,20 @@ public class GameController implements InputEventListener {
             RandomBrickGenerator generator = (RandomBrickGenerator) board.getBrickGenerator();
             List<Brick> nextBricks = generator.getNextBricks(5);
             viewGuiController.updateNextPanels(nextBricks);
+        }
+    }
+
+    /**
+     * Checks if current score beats high score.
+     * Shows notification if new high score achieved.
+     */
+    private void checkHighScore() {
+        int currentScore = board.getScore().scoreProperty().get();
+        boolean isNewHighScore = HighScoreManager.getInstance().checkAndUpdateHighScore(currentScore);
+
+        if (isNewHighScore) {
+            viewGuiController.showNewHighScoreNotification();
+            viewGuiController.updateHighScoreDisplay(currentScore);
         }
     }
 }
