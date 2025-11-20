@@ -3,6 +3,7 @@ package Model;
 import Data.ClearRow;
 import Data.ViewData;
 import com.comp2042.logic.bricks.Brick;
+import com.comp2042.logic.bricks.BrickGenerator;
 
 
 public interface Board {
@@ -42,4 +43,11 @@ public interface Board {
      * @param brick the brick to set as current
      */
     void setCurrentBrick(Brick brick);
+
+    /**
+     * Gets the brick generator.
+     *
+     * @return the BrickGenerator instance
+     */
+    BrickGenerator getBrickGenerator();
 }

@@ -142,4 +142,9 @@ public class SimpleBoard implements Board {
         brickRotator.setBrick(brick);
         currentOffset = new Point(GameConstants.INITIAL_BRICK_X, GameConstants.INITIAL_BRICK_Y);
     }
+
+    @Override
+    public BrickGenerator getBrickGenerator() {
+        return brickGenerator;
+    }
 }

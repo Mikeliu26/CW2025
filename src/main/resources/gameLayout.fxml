@@ -23,6 +23,29 @@
     <!-- Right Side Panel with Score, Buttons, and Hold Box -->
     <VBox layoutX="240" layoutY="50" spacing="10">
 
+        <!-- Next Pieces Preview - UNIFIED CONTAINER -->
+        <VBox alignment="CENTER" spacing="0" style="-fx-padding: 8px; -fx-border-color: #2196F3; -fx-border-width: 3px; -fx-background-color: rgba(0,0,0,0.5); -fx-border-radius: 10px; -fx-background-radius: 10px;">
+            <Label text="NEXT" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white; -fx-padding: 5px;"/>
+
+            <!-- Separator Line -->
+            <Label text="" style="-fx-border-color: #2196F3; -fx-border-width: 0 0 2 0; -fx-pref-width: 100;"/>
+
+            <!-- Preview Box 1 -->
+            <GridPane fx:id="nextPanel1" hgap="1" vgap="1" alignment="CENTER" style="-fx-padding: 8px;"/>
+
+            <!-- Preview Box 2 -->
+            <GridPane fx:id="nextPanel2" hgap="1" vgap="1" alignment="CENTER" style="-fx-padding: 6px;"/>
+
+            <!-- Preview Box 3 -->
+            <GridPane fx:id="nextPanel3" hgap="1" vgap="1" alignment="CENTER" style="-fx-padding: 6px;"/>
+
+            <!-- Preview Box 4 -->
+            <GridPane fx:id="nextPanel4" hgap="1" vgap="1" alignment="CENTER" style="-fx-padding: 4px;"/>
+
+            <!-- Preview Box 5 -->
+            <GridPane fx:id="nextPanel5" hgap="1" vgap="1" alignment="CENTER" style="-fx-padding: 4px;"/>
+        </VBox>
+
         <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
 
         <Button fx:id="pauseButton" text="Pause"

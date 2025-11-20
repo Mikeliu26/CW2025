@@ -10,6 +10,8 @@ import com.comp2042.*;
 import Utilities.GameConstants;
 import Model.HoldManager;
 import com.comp2042.logic.bricks.Brick;
+import java.util.List;
+import com.comp2042.logic.bricks.RandomBrickGenerator;
 
 
 /**
@@ -37,6 +39,7 @@ public class GameController implements InputEventListener {
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
+        updateNextPiecesDisplay();
     }
 
     /**
@@ -60,6 +63,8 @@ public class GameController implements InputEventListener {
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
             }
+
+            updateNextPiecesDisplay();
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
 
@@ -187,5 +192,16 @@ public class GameController implements InputEventListener {
 
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
         viewGuiController.refreshBrick(board.getViewData());
+    }
+
+    /**
+     * Updates the next pieces preview display.
+     */
+    private void updateNextPiecesDisplay() {
+        if (board.getBrickGenerator() instanceof RandomBrickGenerator) {
+            RandomBrickGenerator generator = (RandomBrickGenerator) board.getBrickGenerator();
+            List<Brick> nextBricks = generator.getNextBricks(5);
+            viewGuiController.updateNextPanels(nextBricks);
+        }
     }
 }

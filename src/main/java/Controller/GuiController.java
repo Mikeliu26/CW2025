@@ -1,6 +1,5 @@
 package Controller;
 
-
 import Utilities.ColorManager;
 import Data.DownData;
 import Data.MoveEvent;
@@ -29,10 +28,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 import Utilities.GameConstants;
-import java.net.URL;
-import java.util.ResourceBundle;
 import Utilities.GhostPieceCalculator;
 import java.awt.Point;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+import com.comp2042.logic.bricks.Brick;
 
 /**
  * JavaFX controller managing user interface for Tetris
@@ -71,6 +72,25 @@ public class GuiController implements Initializable {
     @FXML
     private Button pauseButton;
 
+    @FXML
+    private GridPane nextPanel;
+
+    @FXML
+    private GridPane nextPanel1;
+
+    @FXML
+    private GridPane nextPanel2;
+
+    @FXML
+    private GridPane nextPanel3;
+
+    @FXML
+    private GridPane nextPanel4;
+
+    @FXML
+    private GridPane nextPanel5;
+
+
 
     /**
      * Matrix of each rectangle representing game board display
@@ -92,6 +112,10 @@ public class GuiController implements Initializable {
      * To hold the ghost rectangle
      */
     private Rectangle[][] holdRectangles;
+    /**
+     * To show the preview of the next few blocks
+     */
+    private Rectangle[][][] nextPanelRectangles;
     /**
      * Timeline to control automatic brick failing
      */
@@ -170,6 +194,7 @@ public class GuiController implements Initializable {
         });
         gameOverPanel.setVisible(false);
         initHoldPanel();
+        initNextPanels();
 
         final Reflection reflection = new Reflection();
 
@@ -431,6 +456,67 @@ public class GuiController implements Initializable {
             }
         }
     }
+
+    /**
+     * Initializes all next piece preview panels.
+     * Creates a 4x4 grid for each of the 5 preview boxes.
+     */
+    public void initNextPanels() {
+        GridPane[] panels = {nextPanel1, nextPanel2, nextPanel3, nextPanel4, nextPanel5};
+        nextPanelRectangles = new Rectangle[5][4][4];
+
+        int[] sizes = {16, 14, 14, 12, 12};  // Smaller size
+
+        for (int panelIndex = 0; panelIndex < panels.length; panelIndex++) {
+            int brickSize = sizes[panelIndex];
+
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    Rectangle rectangle = new Rectangle(brickSize, brickSize);
+                    rectangle.setFill(Color.TRANSPARENT);
+                    rectangle.setArcHeight(6);
+                    rectangle.setArcWidth(6);
+                    nextPanelRectangles[panelIndex][i][j] = rectangle;
+                    panels[panelIndex].add(rectangle, j, i);
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates all next piece preview displays.
+     *
+     * @param nextBricks list of upcoming bricks to display
+     */
+    public void updateNextPanels(List<Brick> nextBricks) {
+        for (int panelIndex = 0; panelIndex < Math.min(5, nextBricks.size()); panelIndex++) {
+            Brick brick = nextBricks.get(panelIndex);
+            int[][] brickData = brick.getShape();
+
+            // Clear panel first
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    nextPanelRectangles[panelIndex][i][j].setFill(Color.TRANSPARENT);
+                }
+            }
+
+            // Draw brick
+            for (int i = 0; i < brickData.length; i++) {
+                for (int j = 0; j < brickData[i].length; j++) {
+                    if (brickData[i][j] != 0) {
+                        nextPanelRectangles[panelIndex][i][j].setFill(
+                                ColorManager.getFillColor(brickData[i][j])
+                        );
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * Updates all next piece preview displays.
+     *
+     * @param nextBricks list of upcoming bricks to display
+     */
 
     /**
      * Updates the hold panel display with the held brick.
