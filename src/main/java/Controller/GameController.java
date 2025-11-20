@@ -13,6 +13,7 @@ import com.comp2042.logic.bricks.Brick;
 import java.util.List;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
 import Model.HighScoreManager;
+import Model.LevelManager;
 
 
 /**
@@ -29,6 +30,8 @@ public class GameController implements InputEventListener {
 
     private final HoldManager holdManager = new HoldManager();
 
+    private final LevelManager levelManager = new LevelManager();
+
     /**
      * Constructs a new GameController and initializes the game.
      * Sets up the board, GUI bindings, and initial game state.
@@ -43,6 +46,8 @@ public class GameController implements InputEventListener {
         updateNextPiecesDisplay();
         int highScore = HighScoreManager.getInstance().getHighScore();
         viewGuiController.updateHighScoreDisplay(highScore);
+        viewGuiController.updateLevelDisplay(levelManager.getCurrentLevel());
+        viewGuiController.updateLinesDisplay(levelManager.getTotalLinesCleared());
     }
 
     /**
@@ -63,15 +68,25 @@ public class GameController implements InputEventListener {
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
                 checkHighScore();
+
+                // ✅ ADD THIS - Handle level progression
+                boolean leveledUp = levelManager.addLines(clearRow.getLinesRemoved());
+                viewGuiController.updateLinesDisplay(levelManager.getTotalLinesCleared());
+
+                if (leveledUp) {
+                    int newLevel = levelManager.getCurrentLevel();
+                    int newSpeed = levelManager.getFallSpeed();
+                    viewGuiController.updateLevelDisplay(newLevel);
+                    viewGuiController.updateGameSpeed(newSpeed);
+                    viewGuiController.showLevelUpNotification(newLevel);
+                }
             }
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
             }
 
             updateNextPiecesDisplay();
-
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
-
         }
         return new DownData(clearRow, board.getViewData());
     }
@@ -120,10 +135,13 @@ public class GameController implements InputEventListener {
     public void createNewGame() {
         board.newGame();
         holdManager.clear();
+        levelManager.reset();  // ✅ ADD THIS
         viewGuiController.updateHoldDisplay(null);
+        viewGuiController.updateLevelDisplay(1);  // ✅ ADD THIS
+        viewGuiController.updateLinesDisplay(0);  // ✅ ADD THIS
+        viewGuiController.updateGameSpeed(levelManager.getFallSpeed());  // ✅ ADD THIS
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
     }
-
     /**
      * Gets the game board for ghost piece calculations.
      *
@@ -171,24 +189,34 @@ public class GameController implements InputEventListener {
     public void hardDropPiece() {
         int dropDistance = 0;
 
-        // Count how far we drop
         while (board.moveBrickDown()) {
             dropDistance++;
         }
 
-        // Award 2 points per row dropped
         if (dropDistance > 0) {
             board.getScore().add(dropDistance * 2);
         }
 
-        // Piece has landed - process as normal down event
         board.mergeBrickToBackground();
-        holdManager.resetHoldLock();  // Allow holding next piece
+        holdManager.resetHoldLock();
 
         ClearRow clearRow = board.clearRows();
         if (clearRow.getLinesRemoved() > 0) {
             board.getScore().add(clearRow.getScoreBonus());
             checkHighScore();
+
+            // ✅ ADD THIS - Handle level progression
+            boolean leveledUp = levelManager.addLines(clearRow.getLinesRemoved());
+            viewGuiController.updateLinesDisplay(levelManager.getTotalLinesCleared());
+
+            if (leveledUp) {
+                int newLevel = levelManager.getCurrentLevel();
+                int newSpeed = levelManager.getFallSpeed();
+                viewGuiController.updateLevelDisplay(newLevel);
+                viewGuiController.updateGameSpeed(newSpeed);
+                viewGuiController.showLevelUpNotification(newLevel);
+            }
+
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
         }
 

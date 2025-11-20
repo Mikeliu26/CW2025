@@ -68,6 +68,20 @@
                 styleClass="ipad-dark-grey"
                 prefWidth="100" prefHeight="35"/>
 
+        <!-- Different Levels-->
+        <VBox alignment="CENTER" spacing="2" style="-fx-padding: 5px;">
+            <Label text="LEVEL" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #00E676;"/>
+            <Label fx:id="levelLabel" text="1" style="-fx-font-size: 24px; -fx-text-fill: #00E676; -fx-font-family: 'Let''s go Digital';"/>
+        </VBox>
+
+
+        <VBox alignment="CENTER" spacing="2" style="-fx-padding: 5px;">
+            <Label text="LINES" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #FFFFFF;"/>
+            <Label fx:id="linesLabel" text="0" style="-fx-font-size: 18px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Let''s go Digital';"/>
+        </VBox>
+
+        <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
+
         <!-- Hold Piece Display -->
         <VBox alignment="CENTER" spacing="5" style="-fx-padding: 10px;">
             <Label text="HOLD" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>

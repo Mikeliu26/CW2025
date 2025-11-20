@@ -93,6 +93,12 @@ public class GuiController implements Initializable {
     @FXML
     private Label highScoreLabel;
 
+    @FXML
+    private Label levelLabel;
+
+    @FXML
+    private Label linesLabel;
+
 
 
     /**
@@ -585,5 +591,51 @@ public class GuiController implements Initializable {
         NotificationPanel notification = new NotificationPanel("NEW HIGH SCORE!");
         groupNotification.getChildren().add(notification);
         notification.showScore(groupNotification.getChildren());
+    }
+
+    /**
+     * Updates the level display.
+     *
+     * @param level the current level
+     */
+    public void updateLevelDisplay(int level) {
+        levelLabel.setText(String.valueOf(level));
+    }
+
+    /**
+     * Updates the lines display.
+     *
+     * @param lines total lines cleared
+     */
+    public void updateLinesDisplay(int lines) {
+        linesLabel.setText(String.valueOf(lines));
+    }
+
+    /**
+     * Shows a "LEVEL UP!" notification.
+     *
+     * @param newLevel the level just reached
+     */
+    public void showLevelUpNotification(int newLevel) {
+        NotificationPanel notification = new NotificationPanel("LEVEL " + newLevel + "!");
+        groupNotification.getChildren().add(notification);
+        notification.showScore(groupNotification.getChildren());
+    }
+
+    /**
+     * Updates the game speed.
+     *
+     * @param speedMs new fall speed in milliseconds
+     */
+    public void updateGameSpeed(int speedMs) {
+        if (timeLine != null) {
+            timeLine.stop();
+            timeLine = new Timeline(new KeyFrame(
+                    Duration.millis(speedMs),
+                    ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+            ));
+            timeLine.setCycleCount(Timeline.INDEFINITE);
+            timeLine.play();
+        }
     }
 }
