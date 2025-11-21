@@ -14,6 +14,7 @@ import java.util.List;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
 import Model.HighScoreManager;
 import Model.LevelManager;
+import Model.GameMode;
 
 
 /**
@@ -32,6 +33,8 @@ public class GameController implements InputEventListener {
 
     private final LevelManager levelManager = new LevelManager();
 
+    private GameMode gameMode = GameMode.ZEN;
+
     /**
      * Constructs a new GameController and initializes the game.
      * Sets up the board, GUI bindings, and initial game state.
@@ -39,6 +42,8 @@ public class GameController implements InputEventListener {
 
     public GameController(GuiController c) {
         viewGuiController = c;
+        gameMode = c.getGameMode();
+
         board.createNewBrick();
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
@@ -48,6 +53,8 @@ public class GameController implements InputEventListener {
         viewGuiController.updateHighScoreDisplay(highScore);
         viewGuiController.updateLevelDisplay(levelManager.getCurrentLevel());
         viewGuiController.updateLinesDisplay(levelManager.getTotalLinesCleared());
+
+        viewGuiController.updateGameSpeed(gameMode.getBaseSpeed());
     }
 
     /**
@@ -236,6 +243,7 @@ public class GameController implements InputEventListener {
     private void updateNextPiecesDisplay() {
         if (board.getBrickGenerator() instanceof RandomBrickGenerator) {
             RandomBrickGenerator generator = (RandomBrickGenerator) board.getBrickGenerator();
+            int previewCount = gameMode.getPreviewCount();
             List<Brick> nextBricks = generator.getNextBricks(5);
             viewGuiController.updateNextPanels(nextBricks);
         }

@@ -34,6 +34,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import com.comp2042.logic.bricks.Brick;
+import Model.GameMode;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import java.io.IOException;
+
 
 /**
  * JavaFX controller managing user interface for Tetris
@@ -71,9 +78,6 @@ public class GuiController implements Initializable {
 
     @FXML
     private Button pauseButton;
-
-    @FXML
-    private GridPane nextPanel;
 
     @FXML
     private GridPane nextPanel1;
@@ -137,6 +141,10 @@ public class GuiController implements Initializable {
      * Tracking game over state
      */
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+    /**
+     * Default mode is Zen
+     */
+    private GameMode currentGameMode = GameMode.ZEN;
 
     /**
      * Initializes the controller and sets up UI components.
@@ -149,19 +157,20 @@ public class GuiController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // ADD VALIDATION HERE:
+        // Load font
         URL fontUrl = getClass().getClassLoader().getResource("digital.ttf");
         if (fontUrl != null) {
             Font.loadFont(fontUrl.toExternalForm(), 38);
         } else {
             System.err.println("Warning: digital.ttf font not found! Using default font.");
         }
+
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
-        gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        gamePanel.setOnKeyPressed(new EventHandler <KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if (!isPause.getValue() && !isGameOver.getValue()) {  // ✅ CHANGED THIS LINE
+                if (!isPause.getValue() && !isGameOver.getValue()) {
                     if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
                         refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
                         keyEvent.consume();
@@ -188,26 +197,23 @@ public class GuiController implements Initializable {
                     }
                 }
 
-                // Pause key - works even when paused
                 if (keyEvent.getCode() == KeyCode.P) {
                     pauseGame(null);
                     keyEvent.consume();
                 }
 
-                // New game key
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
                     keyEvent.consume();
                 }
             }
         });
+
         gameOverPanel.setVisible(false);
         initHoldPanel();
         initNextPanels();
 
         final Reflection reflection = new Reflection();
-
-
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
@@ -497,11 +503,15 @@ public class GuiController implements Initializable {
      *
      * @param nextBricks list of upcoming bricks to display
      */
+    /**
+     * Updates all next piece preview displays.
+     *
+     * @param nextBricks list of upcoming bricks to display
+     */
     public void updateNextPanels(List<Brick> nextBricks) {
-        for (int panelIndex = 0; panelIndex < Math.min(5, nextBricks.size()); panelIndex++) {
-            Brick brick = nextBricks.get(panelIndex);
-            int[][] brickData = brick.getShape();
+        GridPane[] panels = {nextPanel1, nextPanel2, nextPanel3, nextPanel4, nextPanel5};
 
+        for (int panelIndex = 0; panelIndex < panels.length; panelIndex++) {
             // Clear panel first
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 4; j++) {
@@ -509,15 +519,27 @@ public class GuiController implements Initializable {
                 }
             }
 
-            // Draw brick
-            for (int i = 0; i < brickData.length; i++) {
-                for (int j = 0; j < brickData[i].length; j++) {
-                    if (brickData[i][j] != 0) {
-                        nextPanelRectangles[panelIndex][i][j].setFill(
-                                ColorManager.getFillColor(brickData[i][j])
-                        );
+            // Only draw if we have a brick for this position
+            if (panelIndex < nextBricks.size()) {
+                Brick brick = nextBricks.get(panelIndex);
+                int[][] brickData = brick.getShape();
+
+                // Draw brick
+                for (int i = 0; i < brickData.length; i++) {
+                    for (int j = 0; j < brickData[i].length; j++) {
+                        if (brickData[i][j] != 0) {
+                            nextPanelRectangles[panelIndex][i][j].setFill(
+                                    ColorManager.getFillColor(brickData[i][j])
+                            );
+                        }
                     }
                 }
+
+                // Show the panel
+                panels[panelIndex].setVisible(true);
+            } else {
+                // Hide unused panels (for modes with fewer previews)
+                panels[panelIndex].setVisible(false);
             }
         }
     }
@@ -636,6 +658,45 @@ public class GuiController implements Initializable {
             ));
             timeLine.setCycleCount(Timeline.INDEFINITE);
             timeLine.play();
+        }
+    }
+
+    /**
+     * Sets the game mode for this session.
+     * Must be chosen before game starts.
+     *
+     * @param mode the selected game mode
+     */
+    public void setGameMode(GameMode mode) {
+        this.currentGameMode = mode;
+    }
+
+    /**
+     * Gets the current game mode.
+     *
+     * @return the active game mode
+     */
+    public GameMode getGameMode() {
+        return currentGameMode;
+    }
+
+    /**
+     * Returns to mode selection menu.
+     */
+    public void backToMenu(ActionEvent actionEvent) {
+        try {
+            timeLine.stop();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/modeSelection.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) gamePanel.getScene().getWindow();
+            Scene scene = new Scene(root, 400, 600);
+            stage.setScene(scene);
+            stage.setTitle("Tetris - Select Mode");
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

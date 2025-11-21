@@ -6,7 +6,8 @@
 <?import java.net.URL?>
 <Pane fx:controller="Controller.GuiController"
       xmlns:fx="http://javafx.com/fxml"
-      prefWidth="350" prefHeight="550">
+      prefWidth="350" prefHeight="550"
+      style="-fx-background-color: #1a1a1a;">
 
     <GridPane fx:id="brickPanel" hgap="1" vgap="1">
     </GridPane>
@@ -14,7 +15,8 @@
     <GridPane fx:id="ghostPanel" hgap="1" vgap="1" visible="true">
     </GridPane>
 
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard">
+    <BorderPane styleClass="gameBoard" fx:id="gameBoard"
+                style="-fx-border-color: #00E676; -fx-border-width: 3px; -fx-background-color: rgba(0,0,0,0.3); -fx-border-radius: 5px;">
         <center>
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
         </center>
@@ -47,10 +49,6 @@
         </VBox>
 
 
-        <VBox alignment="CENTER" spacing="0" style="-fx-padding: 8px; -fx-border-color: #2196F3; -fx-border-width: 3px; -fx-background-color: rgba(0,0,0,0.5); -fx-border-radius: 10px; -fx-background-radius: 10px;">
-
-        </VBox>
-
         <!-- High Score Display - ADD THIS -->
         <VBox alignment="CENTER" spacing="2" style="-fx-padding: 5px;">
             <Label text="HIGH SCORE" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #FFD700;"/>
@@ -65,6 +63,11 @@
 
         <Button text="New Game"
                 onAction="#newGame"
+                styleClass="ipad-dark-grey"
+                prefWidth="100" prefHeight="35"/>
+
+        <Button text="Back to Menu"
+                onAction="#backToMenu"
                 styleClass="ipad-dark-grey"
                 prefWidth="100" prefHeight="35"/>
 

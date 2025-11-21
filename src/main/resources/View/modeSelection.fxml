@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="Controller.ModeSelectionController"
+      alignment="CENTER" spacing="20"
+      prefWidth="400" prefHeight="600"
+      style="-fx-background-color: #1a1a1a;">
+
+    <!-- Title -->
+    <Label text="TETRIS" style="-fx-text-fill: #00E676; -fx-font-size: 48px; -fx-font-weight: bold; -fx-font-family: 'Let''s go Digital';"/>
+
+    <Label text="SELECT MODE" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+    <!-- Mode Buttons -->
+    <VBox spacing="15" alignment="CENTER" style="-fx-padding: 20px;">
+
+        <!-- Zen Mode -->
+        <VBox alignment="CENTER" spacing="5">
+            <Button fx:id="zenButton" text="ZEN MODE 🧘‍♂️"
+                    onAction="#selectZenMode"
+                    prefWidth="300" prefHeight="60"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 10px;"/>
+            <Label text="Endless relaxation - no game over" style="-fx-text-fill: #AAA; -fx-font-size: 12px;"/>
+        </VBox>
+
+        <!-- Sprint Mode -->
+        <VBox alignment="CENTER" spacing="5">
+            <Button fx:id="sprintButton" text="SPRINT MODE 🏃‍♂️"
+                    onAction="#selectSprintMode"
+                    prefWidth="300" prefHeight="60"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 10px;"/>
+            <Label text="Clear 20 lines as fast as possible" style="-fx-text-fill: #AAA; -fx-font-size: 12px;"/>
+        </VBox>
+
+        <!-- Blitz Mode -->
+        <VBox alignment="CENTER" spacing="5">
+            <Button fx:id="blitzButton" text="BLITZ MODE ⚡"
+                    onAction="#selectBlitzMode"
+                    prefWidth="300" prefHeight="60"
+                    style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 10px;"/>
+            <Label text="Maximum score in 2 minutes" style="-fx-text-fill: #AAA; -fx-font-size: 12px;"/>
+        </VBox>
+
+        <!-- Chaos Mode -->
+        <VBox alignment="CENTER" spacing="5">
+            <Button fx:id="chaosButton" text="CHAOS MODE 🌪️"
+                    onAction="#selectChaosMode"
+                    prefWidth="300" prefHeight="60"
+                    style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 10px;"/>
+            <Label text="Only see last 6 pieces!" style="-fx-text-fill: #AAA; -fx-font-size: 12px;"/>
+        </VBox>
+
+    </VBox>
+
+    <stylesheets>
+        <URL value="@window_style.css"/>
+    </stylesheets>
+</VBox>
