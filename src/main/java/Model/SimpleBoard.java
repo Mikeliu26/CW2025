@@ -143,8 +143,20 @@ public class SimpleBoard implements Board {
         currentOffset = new Point(GameConstants.INITIAL_BRICK_X, GameConstants.INITIAL_BRICK_Y);
     }
 
-    @Override
+   @Override
     public BrickGenerator getBrickGenerator() {
         return brickGenerator;
+    }
+
+    /**
+     * Clears the entire board (for Zen mode when board fills up).
+     */
+    @Override
+    public void clearBoard() {
+        for (int i = 0; i < currentGameMatrix.length; i++) {
+            for (int j = 0; j < currentGameMatrix[i].length; j++) {
+                currentGameMatrix[i][j] = 0;
+            }
+        }
     }
 }

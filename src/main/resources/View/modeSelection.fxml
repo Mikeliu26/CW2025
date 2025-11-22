@@ -35,7 +35,7 @@
                     onAction="#selectSprintMode"
                     prefWidth="300" prefHeight="60"
                     style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 10px;"/>
-            <Label text="Clear 20 lines as fast as possible" style="-fx-text-fill: #AAA; -fx-font-size: 12px;"/>
+            <Label text="Clear 10 lines as fast as possible" style="-fx-text-fill: #AAA; -fx-font-size: 12px;"/>
         </VBox>
 
         <!-- Blitz Mode -->

@@ -39,7 +39,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.io.IOException;
+import Model.GameTimer;
+import javafx.scene.layout.VBox;
+import Model.PieceHistoryTracker;
 
 
 /**
@@ -103,6 +105,21 @@ public class GuiController implements Initializable {
     @FXML
     private Label linesLabel;
 
+    @FXML
+    private GameTimer gameTimer;
+
+    @FXML
+    private VBox timerContainer;
+
+    @FXML
+    private Label timerLabel;
+
+    @FXML
+    private Label timerTitle;
+
+
+
+
 
 
     /**
@@ -145,6 +162,10 @@ public class GuiController implements Initializable {
      * Default mode is Zen
      */
     private GameMode currentGameMode = GameMode.ZEN;
+    /**
+     * Track 6 pieces for Chaos mode.
+     */
+    private PieceHistoryTracker pieceHistoryTracker;
 
     /**
      * Initializes the controller and sets up UI components.
@@ -294,9 +315,29 @@ public class GuiController implements Initializable {
      */
 
     public void refreshGameBackground(int[][] board) {
+        if (currentGameMode == GameMode.CHAOS && pieceHistoryTracker != null) {
+            System.out.println("🌪️ Chaos Mode: Rendering with " + pieceHistoryTracker.getRecentPiecesCount() + " tracked pieces");
+        }
+
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                setRectangleData(board[i][j], displayMatrix[i][j]);
+                if (currentGameMode == GameMode.CHAOS && pieceHistoryTracker != null) {
+                    if (board[i][j] != 0) {
+                        boolean isVisible = pieceHistoryTracker.isVisible(i, j);
+
+                        if (!isVisible) {
+                            // Make old pieces very dark/invisible
+                            displayMatrix[i][j].setFill(Color.rgb(20, 20, 20, 0.3));
+                            displayMatrix[i][j].setArcHeight(9);
+                            displayMatrix[i][j].setArcWidth(9);
+                        } else {
+                            setRectangleData(board[i][j], displayMatrix[i][j]);
+                        }
+                    }
+                } else {
+                    // Normal rendering for other modes
+                    setRectangleData(board[i][j], displayMatrix[i][j]);
+                }
             }
         }
     }
@@ -362,6 +403,7 @@ public class GuiController implements Initializable {
 
     public void gameOver() {
         timeLine.stop();
+        stopTimer();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
     }
@@ -375,10 +417,12 @@ public class GuiController implements Initializable {
 
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
+        stopTimer();
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
         timeLine.play();
+        initTimer();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
         pauseButton.setText("Pause");
@@ -394,10 +438,12 @@ public class GuiController implements Initializable {
     public void pauseGame(ActionEvent actionEvent) {
         if (!isPause.getValue()) {
             timeLine.pause();
+            pauseTimer();
             isPause.setValue(Boolean.TRUE);
             pauseButton.setText("Resume");
         } else {
             timeLine.play();
+            resumeTimer();
             isPause.setValue(Boolean.FALSE);
             pauseButton.setText("Pause");
         }
@@ -681,6 +727,13 @@ public class GuiController implements Initializable {
     }
 
     /**
+     * Sets the piece history tracker for Chaos mode.
+     */
+    public void setPieceHistoryTracker(PieceHistoryTracker tracker) {
+        this.pieceHistoryTracker = tracker;
+    }
+
+    /**
      * Returns to mode selection menu.
      */
     public void backToMenu(ActionEvent actionEvent) {
@@ -698,5 +751,91 @@ public class GuiController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Initializes the timer for time-based modes.
+     */
+    public void initTimer() {
+        if (currentGameMode == GameMode.SPRINT) {
+            // Sprint: count up
+            timerContainer.setVisible(true);
+            timerTitle.setText("TIME");
+            timerTitle.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2196F3;");
+            gameTimer = new GameTimer(false, 0);
+            timerLabel.textProperty().bind(
+                    gameTimer.secondsProperty().asString().map(s -> GameTimer.formatTime(Integer.parseInt(s)))
+            );
+            gameTimer.start();
+
+        } else if (currentGameMode == GameMode.BLITZ) {
+            // Blitz: count down from 2 minutes
+            timerContainer.setVisible(true);
+            timerTitle.setText("TIME");
+            timerTitle.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #FF9800;");
+            gameTimer = new GameTimer(true, 120);  // 120 seconds = 2 minutes
+            timerLabel.textProperty().bind(
+                    gameTimer.secondsProperty().asString().map(s -> GameTimer.formatTime(Integer.parseInt(s)))
+            );
+
+            // Set callback for when time runs out
+            gameTimer.setOnTimeUp(() -> {
+                gameOver();
+            });
+
+            gameTimer.start();
+
+        } else {
+            // Zen/Chaos: no timer
+            timerContainer.setVisible(false);
+        }
+    }
+
+    /**
+     * Pauses the game timer.
+     */
+    public void pauseTimer() {
+        if (gameTimer != null) {
+            gameTimer.pause();
+        }
+    }
+
+    /**
+     * Resumes the game timer.
+     */
+    public void resumeTimer() {
+        if (gameTimer != null) {
+            gameTimer.resume();
+        }
+    }
+
+    /**
+     * Stops the game timer.
+     */
+    public void stopTimer() {
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
+    }
+
+    /**
+     * Shows Sprint mode completion screen.
+     * Displays final time when 20 lines are cleared.
+     */
+    public void sprintComplete() {
+        timeLine.stop();
+        stopTimer();
+
+        int finalTime = gameTimer != null ? gameTimer.getSeconds() : 0;
+        String timeStr = GameTimer.formatTime(finalTime);
+
+        // Show victory notification
+        NotificationPanel notification = new NotificationPanel("SPRINT COMPLETE! Time: " + timeStr);
+        groupNotification.getChildren().add(notification);
+        notification.showScore(groupNotification.getChildren());
+
+        // Stop the game
+        isGameOver.setValue(Boolean.TRUE);
+        gameOverPanel.setVisible(true);
     }
 }

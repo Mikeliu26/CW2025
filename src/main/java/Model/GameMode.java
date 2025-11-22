@@ -10,8 +10,8 @@ public enum GameMode {
             500, 5, false, false),
 
     SPRINT("Sprint Mode",
-            "Clear 20 lines as fast as possible",
-            250, 3, true, false),
+            "Clear 10 lines as fast as possible",
+            300, 3, true, false),
 
     BLITZ("Blitz Mode",
             "Maximum score in 2 minutes",
@@ -19,7 +19,7 @@ public enum GameMode {
 
     CHAOS("Chaos Mode",
             "Only see last 6 pieces - test your memory!",
-            100, 1, false, false);
+            400, 1, false, false);
 
     private final String displayName;
     private final String description;
@@ -77,10 +77,10 @@ public enum GameMode {
     }
 
     /**
-     * Gets the goal for Sprint mode (20 lines).
+     * Gets the goal for Sprint mode (10 lines).
      */
     public int getLineGoal() {
-        return hasLineGoal ? 20 : -1;
+        return hasLineGoal ? 10 : -1;
     }
 
     /**

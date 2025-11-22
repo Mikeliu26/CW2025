@@ -50,4 +50,9 @@ public interface Board {
      * @return the BrickGenerator instance
      */
     BrickGenerator getBrickGenerator();
+
+    /**
+     * Clears the entire board (for Zen mode).
+     */
+    void clearBoard();
 }

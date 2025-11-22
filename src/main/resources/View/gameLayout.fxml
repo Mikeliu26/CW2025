@@ -83,6 +83,14 @@
             <Label fx:id="linesLabel" text="0" style="-fx-font-size: 18px; -fx-text-fill: #FFFFFF; -fx-font-family: 'Let''s go Digital';"/>
         </VBox>
 
+        <!-- Timer Display -->
+        <VBox fx:id="timerContainer" alignment="CENTER" spacing="2" style="-fx-padding: 5px;" visible="false">
+            <Label fx:id="timerTitle" text="TIME" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #FF9800;"/>
+            <Label fx:id="timerLabel" text="0:00" style="-fx-font-size: 20px; -fx-text-fill: #FF9800; -fx-font-family: 'Let''s go Digital';"/>
+        </VBox>
+
+        <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
+
         <Label fx:id="scoreLabel" text="Score: 0" styleClass="scoreClass"/>
 
         <!-- Hold Piece Display -->
